@@ -1,0 +1,5 @@
+.pytest_cache/
+.venv/
+embeddings/
+src/surgical_embeddings/__pycache__/
+tests/__pycache__/
