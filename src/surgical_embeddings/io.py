@@ -40,28 +40,3 @@ def save_embeddings(embedding_results, output_dir):
         np.savez(filepath, embeddings=array)
 
         print(f"Saved: {filepath}")
-
-# import os
-# import numpy as np
-
-# def save_embeddings(embeddings, output_dir):
-#     """
-#     Save embeddings separately for each model.
-
-#     Args:
-#         embeddings: dictionary of model names and their corresponding embeddings.
-#         output_dir: directory to save the embedding files.
-#     Returns:
-#         None
-#     """
-
-#     os.makedirs(output_dir, exist_ok=True)
-
-#     for model_name, embedding in embeddings.items():
-#         file_path = os.path.join(output_dir, f"{model_name}_embeddings.npz")
-
-#         np.savez_compressed(
-#             file_path,
-#             embeddings=embedding,
-#             model=model_name,
-#         )
