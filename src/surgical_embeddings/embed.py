@@ -11,7 +11,7 @@ from .pca import apply_full_pca
 MODEL_NAMES = {
     "SapBERT": "cambridgeltl/SapBERT-from-PubMedBERT-fulltext",
     "MiniLM": "sentence-transformers/all-MiniLM-L6-v2",
-    "BGE_Large": "BAAI/bge-large-zh-v1.5",
+    "BGE_Large": "BAAI/bge-large-en-v1.5",
 }
 
 BATCH_SIZE = 128
@@ -125,58 +125,12 @@ def get_embedding(model_name, input_list):
         np.ndarray: Generated embeddings.
     """
 
-    if model_name == "SapBERT":
-        return sapbert_embedding(input_list)
-
-    elif model_name in ["MiniLM", "BGE_Large"]:
+    if model_name in MODEL_NAMES:
         return sentence_transformer_embedding(model_name, input_list)
-
     else:
         raise ValueError(
             f"Unsupported model: {model_name}"
         )
-
-# Implementation of SapBERT embedding generation
-def sapbert_embedding(input_list):
-    """
-    Generate SapBERT embeddings using CLS token representation.
-
-    Args:
-        input_list (list): List of strings to generate embeddings for.
-    Returns:
-        np.ndarray: Generated embeddings.
-    """
-    if not input_list:
-        return np.array([])
-
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAMES["SapBERT"])
-    model = AutoModel.from_pretrained(MODEL_NAMES["SapBERT"])
-    device = ("cuda" if torch.cuda.is_available() else "cpu")
-
-    model.to(device)
-    model.eval()
-
-    embeddings = []
-
-
-    with torch.no_grad():
-        for i in tqdm(range(0, len(input_list), BATCH_SIZE)):
-            batch = input_list[i:i+BATCH_SIZE]
-            tokens = tokenizer(
-                batch, 
-                padding="max_length", 
-                truncation=True, 
-                max_length=MAX_LENGTH, 
-                return_tensors="pt"
-            )
-            tokens = {
-                key:value.to(device)
-                for key,value in tokens.items()
-            }
-            cls_rep = model(**tokens)[0][:,0,:]
-            embeddings.append(cls_rep.cpu().numpy())
-
-    return np.concatenate(embeddings, axis=0)
 
 # Implementation of SentenceTransformer embedding generation
 def sentence_transformer_embedding(model_name, input_list):
@@ -204,6 +158,14 @@ def sentence_transformer_embedding(model_name, input_list):
             input_list,
             batch_size=BATCH_SIZE,
             show_progress_bar=True,
+        )
+    elif model_name == "SapBERT":
+        embeddings = model.encode(
+            input_list,
+            batch_size=BATCH_SIZE,
+            normalize_embeddings=True,
+            show_progress_bar=True,
+            convert_to_numpy=True
         )
     else:
         raise ValueError(f"Unsupported model: {model_name}")

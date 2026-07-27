@@ -23,7 +23,7 @@ text = [
 ]
 
 # Generate and save embeddings for all models, no PCA or variance applied
-all_embeddings = generate_embeddings(['laparoscopic', 'robotic'], model_name="all")
+all_embeddings = generate_embeddings(text, model_name="all")
 save_embeddings(all_embeddings, output_dir="embeddings/all")
 
 # Generate and save embeddings for all models, full PCA applied
