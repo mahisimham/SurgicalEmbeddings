@@ -144,29 +144,15 @@ def sentence_transformer_embedding(model_name, input_list):
         np.ndarray: Generated embeddings.
     """
 
-    model = SentenceTransformer(MODEL_NAMES[model_name])
-
-    if model_name == "BGE_Large":
+    if model_name in MODEL_NAMES:
+        model = SentenceTransformer(MODEL_NAMES[model_name])
         embeddings = model.encode(
-            input_list,
-            batch_size=BATCH_SIZE,
-            normalize_embeddings=True,
-            show_progress_bar=True,
-        )
-    elif model_name == "MiniLM":
-        embeddings = model.encode(
-            input_list,
-            batch_size=BATCH_SIZE,
-            show_progress_bar=True,
-        )
-    elif model_name == "SapBERT":
-        embeddings = model.encode(
-            input_list,
-            batch_size=BATCH_SIZE,
-            normalize_embeddings=True,
-            show_progress_bar=True,
-            convert_to_numpy=True
-        )
+                    input_list,
+                    batch_size=BATCH_SIZE,
+                    normalize_embeddings=True,
+                    show_progress_bar=True,
+                    convert_to_numpy=True
+                )
     else:
         raise ValueError(f"Unsupported model: {model_name}")
 

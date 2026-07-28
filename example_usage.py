@@ -1,6 +1,7 @@
 from src.surgical_embeddings import (
     generate_embeddings,
     save_embeddings,
+    plot_pca
 )
 
 """
@@ -33,3 +34,6 @@ save_embeddings(all_embeddings, output_dir="embeddings/all")
 # Generate and save embeddings for all models, PCA applied, 95% variance retained
 all_embeddings = generate_embeddings(text, model_name="all", apply_pca=True, variance_percent=95)
 save_embeddings(all_embeddings, output_dir="embeddings/all")
+
+# Plot PCA
+plot_pca("embeddings/all/BGE_Large_embeddings_pca_full.npz", title="BGE Large PCA Embeddings")
