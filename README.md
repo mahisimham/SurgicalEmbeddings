@@ -14,6 +14,40 @@ Generate normalized text embeddings for surgical and medical terms using pretrai
 
 Given a list of strings, it produces normalized embeddings for one, several, or all of these models, and can optionally project them through a precomputed PCA transform (full-rank, or truncated to retain a target percentage of variance).
 
+## Installation
+
+SurgicalEmbeddings requires Python 3.9 or later. To install the package from a
+local clone:
+
+```bash
+git clone https://github.com/mahisimham/SurgicalEmbeddings.git
+cd SurgicalEmbeddings
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install .
+```
+
+For an editable development installation with the test dependency:
+
+```bash
+python -m pip install -e ".[test]"
+```
+
+The package can also be installed directly from GitHub:
+
+```bash
+python -m pip install "git+https://github.com/mahisimham/SurgicalEmbeddings.git"
+```
+
+Once the package has been published to PyPI, it can be installed with:
+
+```bash
+python -m pip install surgical-embeddings
+```
+
+The pretrained Hugging Face models are downloaded and cached automatically
+when each model is used for the first time.
+
 ## Project structure
 
 ```
@@ -33,20 +67,12 @@ requirements.txt       # pinned dependencies
 
 ## Environment
 
-- Python 3.12 (developed/tested against 3.12.7)
+- Python 3.9 or later (developed/tested against 3.12.7)
 - Runtime dependencies are declared in [`pyproject.toml`](pyproject.toml)
 - A fully pinned development environment is available in [`requirements.txt`](requirements.txt)
 
-Setup:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e .
-```
-
-To install the test dependency, use `pip install -e ".[test]"`. For the fully
-pinned development environment, use `pip install -r requirements.txt` instead.
+For the fully pinned development environment, use
+`python -m pip install -r requirements.txt`.
 
 ## Usage
 
