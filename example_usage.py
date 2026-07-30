@@ -1,4 +1,4 @@
-from src.surgical_embeddings import (
+from surgical_embeddings import (
     generate_embeddings,
     save_embeddings,
     plot_pca

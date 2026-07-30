@@ -1,6 +1,6 @@
 # SurgicalEmbeddings
 
-Generate text embeddings for surgical and medical terms using pretrained language models, with optional dimensionality reduction via precomputed PCA transforms.
+Generate normalized text embeddings for surgical and medical terms using pretrained language models, with optional dimensionality reduction via precomputed PCA transforms and plotting of saved PCA embeddings.
 
 ## Overview
 
@@ -10,9 +10,9 @@ Generate text embeddings for surgical and medical terms using pretrained languag
 |---|---|
 | `SapBERT` | [`cambridgeltl/SapBERT-from-PubMedBERT-fulltext`](https://huggingface.co/cambridgeltl/SapBERT-from-PubMedBERT-fulltext) |
 | `MiniLM` | [`sentence-transformers/all-MiniLM-L6-v2`](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) |
-| `BGE_Large` | [`BAAI/bge-large-zh-v1.5`](https://huggingface.co/BAAI/bge-large-zh-v1.5) |
+| `BGE_Large` | [`BAAI/bge-large-en-v1.5`](https://huggingface.co/BAAI/bge-large-en-v1.5) |
 
-Given a list of strings, it produces raw embeddings for one, several, or all of these models, and can optionally project them through a precomputed PCA transform (full-rank, or truncated to retain a target percentage of variance).
+Given a list of strings, it produces normalized embeddings for one, several, or all of these models, and can optionally project them through a precomputed PCA transform (full-rank, or truncated to retain a target percentage of variance).
 
 ## Project structure
 
@@ -21,6 +21,7 @@ src/surgical_embeddings/
 ├── embed.py          # generate_embeddings() and per-model embedding logic
 ├── io.py             # save_embeddings() — writes .npz files per model/config
 ├── pca.py            # apply_full_pca() — applies precomputed PCA matrices
+├── plot.py           # plot_pca() — saves a PNG visualization of PCA embeddings
 └── pca_models/        # precomputed PCA components (mean, components, explained variance) per model
 tests/
 └── test_embeddings.py # pytest suite covering model selection, PCA, saving, and error handling
@@ -33,48 +34,96 @@ requirements.txt       # pinned dependencies
 ## Environment
 
 - Python 3.12 (developed/tested against 3.12.7)
-- Dependencies pinned in [`requirements.txt`](requirements.txt) — key ones: `torch`, `transformers`, `sentence-transformers`, `numpy`, `scikit-learn`
+- Runtime dependencies are declared in [`pyproject.toml`](pyproject.toml)
+- A fully pinned development environment is available in [`requirements.txt`](requirements.txt)
 
 Setup:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -e .
 ```
 
-The package isn't installed/packaged (no build backend configured yet), so run scripts and tests from the repository root so `src/` resolves on the path — see the examples below.
+To install the test dependency, use `pip install -e ".[test]"`. For the fully
+pinned development environment, use `pip install -r requirements.txt` instead.
 
 ## Usage
 
-### Generate embeddings for all models
+### Generate and save embeddings
 
 ```python
-from src.surgical_embeddings import generate_embeddings, save_embeddings
+from surgical_embeddings import (
+    generate_embeddings,
+    save_embeddings,
+)
 
-text = ["laparoscopic", "robotic"]
+terms = ["laparoscopic", "robotic"]
 
-result = generate_embeddings(text, model_name="all")
-save_embeddings(result, output_dir="embeddings/all")
+embeddings = generate_embeddings(terms, model_name="all")
+save_embeddings(embeddings, output_dir="embeddings/all")
 ```
 
-`result["embeddings"]` is a dict of `{model_name: np.ndarray}`; `result["metadata"]` records whether PCA was applied.
+`model_name` accepts a single model key, a list such as
+`["MiniLM", "SapBERT"]`, or `"all"`. A single string is also accepted in
+place of the list of terms.
 
-### Generate embeddings with PCA, retaining 95% of variance
+The returned value contains:
+
+- `embeddings`: a dictionary mapping each selected model key to a two-dimensional NumPy array
+- `metadata`: the `pca_applied` and `variance_percent` settings used for the run
+
+The example above creates one file per model:
+`<Model>_embeddings_original.npz`. Each archive stores its array under the
+`embeddings` key.
+
+### Apply PCA
 
 ```python
-from src.surgical_embeddings import generate_embeddings, save_embeddings
+from surgical_embeddings import generate_embeddings, save_embeddings
 
 result = generate_embeddings(
     ["laparoscopic", "robotic"],
-    model_name="MiniLM",       # or a list, e.g. ["MiniLM", "SapBERT"]
+    model_name="MiniLM",
     apply_pca=True,
-    variance_percent=95,        # omit for full-rank PCA
+    variance_percent=95,
 )
 save_embeddings(result, output_dir="embeddings/minilm")
 ```
 
-See [`example_usage.py`](example_usage.py) for more.
+Set `apply_pca=True` without `variance_percent` to use the full precomputed PCA
+projection. Set `variance_percent` to a value greater than 0 and at most 100 to
+retain the number of principal components needed to reach that percentage of
+explained variance.
+
+Saved files use the configuration in their names:
+
+| Configuration | Filename suffix |
+|---|---|
+| No PCA | `_embeddings_original.npz` |
+| Full PCA | `_embeddings_pca_full.npz` |
+| 95% retained variance | `_embeddings_pca_95percent.npz` |
+
+### Plot saved PCA embeddings
+
+```python
+from surgical_embeddings import plot_pca
+
+plot_pca(
+    "embeddings/all/BGE_Large_embeddings_pca_full.npz",
+    title="BGE Large PCA Embeddings",
+)
+```
+
+`plot_pca` reads the `embeddings` array from the `.npz` archive and saves the
+plot alongside it as
+`BGE_Large_embeddings_pca_full_plot.png`. The saved embeddings must have at
+least two dimensions. Pass `title=None` to use the default title, `PCA
+Embeddings`.
+
+See [`example_usage.py`](example_usage.py) for an end-to-end example that
+generates original, full-PCA, and 95%-variance embeddings before plotting the
+full-PCA BGE output.
 
 ## Testing
 
