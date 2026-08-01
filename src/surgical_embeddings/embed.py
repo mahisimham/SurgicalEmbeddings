@@ -18,17 +18,12 @@ BATCH_SIZE = 128
 MAX_LENGTH = 25
 
 # Main user function to generate embeddings
-def generate_embeddings(
-    input_list,
-    model_name="all",
-    apply_pca=False,
-    variance_percent=None,
-):
+def generate_embeddings(input, model_name="all", apply_pca=False, variance_percent=None):
     """
     Generate embeddings from selected models.
 
     Args:
-        input_list (list): List of strings to generate embeddings for.
+        input (list or str): List of strings, a single string, or a path to a .txt file (one entry per line) to generate embeddings for.
         model_name (str or list): Model name(s) from HuggingFace to use for generating embeddings.
         apply_pca (bool): Whether to apply PCA to the embeddings.
         variance_percent (float): The percentage of variance to retain if PCA is applied.
@@ -40,7 +35,7 @@ def generate_embeddings(
             }
     """
 
-    input_list = validate_input(input_list)
+    input_list = load_input(input)
     models = select_models(model_name)
     embeddings = {}
 
@@ -49,9 +44,8 @@ def generate_embeddings(
         model_embeddings = get_embedding(model, input_list)
 
         if apply_pca:
-            if variance_percent is not None:
-                if not (0 < variance_percent <= 100):
-                    raise ValueError("variance_percent must be between 0 and 100")
+            if isinstance(variance_percent, (float, int)) and (not (0 < variance_percent <= 100)):
+                raise ValueError("variance_percent must be between 0 and 100")
             model_embeddings = apply_full_pca(model_embeddings, model, variance_percent)
         
         embeddings[model] = model_embeddings
@@ -66,24 +60,27 @@ def generate_embeddings(
         "metadata": metadata,
     }
 
-# Input validation 
-def validate_input(input_list):
+# Load and validate the input text
+def load_input(input):
     """
-    Validate the input list to ensure it is a string or a list of strings.
+    Load and validate the input, reading from a txt file if given a file path.
 
     Args:
-        input_list (str or list): Input to validate.
+        input (str or list): A string, a path to a .txt file (one entry
+            per line), or a list of strings.
     Returns:
         list: Validated list of strings.
     """
-    if isinstance(input_list, str):
-        return [input_list]
+    if isinstance(input, str):
+        if input.endswith(".txt"):
+            with open(input, "r") as f:
+                return [line.strip() for line in f if line.strip()]
+        return [input]
 
-    if isinstance(input_list, list):
-        if all(isinstance(x, str) for x in input_list):
-            return input_list
+    if isinstance(input, list) and all(isinstance(x, str) for x in input):
+        return input
 
-    raise ValueError("Input must be a string or list of strings.")
+    raise ValueError("Input must be a string, a path to a txt file, or a list of strings.")
 
 # Select the desired models
 def select_models(model_name):

@@ -12,7 +12,7 @@ Generate normalized text embeddings for surgical and medical terms using pretrai
 | `MiniLM` | [`sentence-transformers/all-MiniLM-L6-v2`](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) |
 | `BGE_Large` | [`BAAI/bge-large-en-v1.5`](https://huggingface.co/BAAI/bge-large-en-v1.5) |
 
-Given a list of strings, it produces normalized embeddings for one, several, or all of these models, and can optionally project them through a precomputed PCA transform (full-rank, or truncated to retain a target percentage of variance).
+Given a list of strings, a single string, or a path to a `.txt` file (one term per line), it produces normalized embeddings for one, several, or all of these models, and can optionally project them through a precomputed PCA transform (full-rank, or truncated to retain a target percentage of variance).
 
 ## Installation
 
@@ -52,7 +52,7 @@ when each model is used for the first time.
 
 ```
 src/surgical_embeddings/
-├── embed.py          # generate_embeddings() and per-model embedding logic
+├── embed.py          # generate_embeddings(), load_text(), and per-model embedding logic
 ├── io.py             # save_embeddings() — writes .npz files per model/config
 ├── pca.py            # apply_full_pca() — applies precomputed PCA matrices
 ├── plot.py           # plot_pca() — saves a PNG visualization of PCA embeddings
@@ -84,15 +84,20 @@ from surgical_embeddings import (
     save_embeddings,
 )
 
+# Option 1: a list of terms
 terms = ["laparoscopic", "robotic"]
-
 embeddings = generate_embeddings(terms, model_name="all")
+save_embeddings(embeddings, output_dir="embeddings/all")
+
+# Option 2: a path to a .txt file with one term per line
+embeddings = generate_embeddings("test_input.txt", model_name="all")
 save_embeddings(embeddings, output_dir="embeddings/all")
 ```
 
 `model_name` accepts a single model key, a list such as
-`["MiniLM", "SapBERT"]`, or `"all"`. A single string is also accepted in
-place of the list of terms.
+`["MiniLM", "SapBERT"]`, or `"all"`. In place of the list of terms, a single
+string is also accepted, as is a path to a `.txt` file with one term per
+line (blank lines are skipped).
 
 The returned value contains:
 

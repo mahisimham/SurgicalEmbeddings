@@ -205,6 +205,50 @@ def test_single_string_input():
 
 
 
+def test_txt_file_input(tmp_path):
+
+    input_path = tmp_path / "terms.txt"
+
+    input_path.write_text(
+        "\n".join(TEST_INPUT) + "\n"
+    )
+
+
+    embeddings = generate_embeddings(
+        str(input_path),
+        model_name="MiniLM",
+    )
+
+
+    assert (
+        embeddings["embeddings"]["MiniLM"].shape[0]
+        == len(TEST_INPUT)
+    )
+
+
+
+def test_txt_file_input_skips_blank_lines(tmp_path):
+
+    input_path = tmp_path / "terms.txt"
+
+    input_path.write_text(
+        "appendectomy\n\n\nlaparoscopic surgery\n"
+    )
+
+
+    embeddings = generate_embeddings(
+        str(input_path),
+        model_name="MiniLM",
+    )
+
+
+    assert (
+        embeddings["embeddings"]["MiniLM"].shape[0]
+        == 2
+    )
+
+
+
 def test_invalid_input():
 
     with pytest.raises(ValueError):
