@@ -68,19 +68,16 @@ For the fully pinned development environment, use
 ### Generate and save embeddings
 
 ```python
-from surgical_embeddings import (
-    generate_embeddings,
-    save_embeddings,
-)
+import surgical_embeddings as se
 
 # Option 1: a list of terms
 terms = ["laparoscopic", "robotic"]
-embeddings = generate_embeddings(terms, model_name="all")
-save_embeddings(embeddings, output_dir="embeddings/all")
+embeddings = se.generate_embeddings(terms, model_name="all")
+se.save_embeddings(embeddings, output_dir="embeddings/all")
 
 # Option 2: a path to a .txt file with one term per line
-embeddings = generate_embeddings("test_input.txt", model_name="all")
-save_embeddings(embeddings, output_dir="embeddings/all")
+embeddings = se.generate_embeddings("test_input.txt", model_name="all")
+se.save_embeddings(embeddings, output_dir="embeddings/all")
 ```
 
 `model_name` accepts a single model key, a list such as
@@ -100,15 +97,15 @@ The example above creates one file per model:
 ### Apply PCA
 
 ```python
-from surgical_embeddings import generate_embeddings, save_embeddings
+import surgical_embeddings as se
 
-result = generate_embeddings(
+result = se.generate_embeddings(
     ["laparoscopic", "robotic"],
     model_name="MiniLM",
     apply_pca=True,
     variance_percent=95,
 )
-save_embeddings(result, output_dir="embeddings/minilm")
+se.save_embeddings(result, output_dir="embeddings/minilm")
 ```
 
 Set `apply_pca=True` without `variance_percent` to use the full precomputed PCA
@@ -132,9 +129,9 @@ Saved files use the configuration in their names:
 ### Plot saved PCA embeddings
 
 ```python
-from surgical_embeddings import plot_pca
+import surgical_embeddings as se
 
-plot_pca(
+se.plot_pca(
     "embeddings/all/BGE_Large_embeddings_pca_full.npz",
     title="BGE Large PCA Embeddings",
 )
