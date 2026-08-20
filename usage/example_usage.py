@@ -28,23 +28,23 @@ ex: 95, 99, None (for full PCA)
 file_embeddings = generate_embeddings("./usage/test_input.txt", model_name="all")
 save_embeddings(file_embeddings, output_dir="embeddings/all_txt")
 
-# # Option 2 - Generate embeddings from a list of strings
-# text = [
-#     "laparoscopic",
-#     "robotic",
-# ]
+# Option 2 - Generate embeddings from a list of strings
+text = [
+    "laparoscopic",
+    "robotic",
+]
 
-# # Generate and save embeddings for all models, no PCA or variance applied
-# all_embeddings = generate_embeddings(text, model_name="all")
-# save_embeddings(all_embeddings, output_dir="embeddings/all")
+# Generate and save embeddings for all models, no PCA or variance applied
+all_embeddings = generate_embeddings(text, model_name="all")
+save_embeddings(all_embeddings, output_dir="embeddings/all")
 
-# # Generate and save embeddings for all models, full PCA applied
-# all_embeddings = generate_embeddings(text, model_name="all", apply_pca=True)
-# save_embeddings(all_embeddings, output_dir="embeddings/all")
+# Generate and save embeddings for all models, full PCA applied
+all_embeddings = generate_embeddings(text, model_name="all", apply_pca=True)
+save_embeddings(all_embeddings, output_dir="embeddings/all")
 
-# # Generate and save embeddings for all models, PCA applied, 95% variance retained
-# all_embeddings = generate_embeddings(text, model_name="all", apply_pca=True, variance_percent=95)
-# save_embeddings(all_embeddings, output_dir="embeddings/all")
+# Generate and save embeddings for all models, PCA applied, 95% variance retained
+all_embeddings = generate_embeddings(text, model_name="all", apply_pca=True, variance_percent=95)
+save_embeddings(all_embeddings, output_dir="embeddings/all")
 
-# # Plot PCA
-# plot_pca("embeddings/all/BGE_Large_embeddings_pca_full.npz", title="BGE Large PCA Embeddings")
+# Plot PCA
+plot_pca("embeddings/all/BGE_Large_embeddings_pca_full.npz", title="BGE Large PCA Embeddings")

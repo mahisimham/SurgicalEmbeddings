@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "surgical-embeddings"
-version = "0.1.0"
+version = "1.0.2"
 description = "Generate and visualize embeddings for surgical and medical terms."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [
     { name = "Mahitha Simhambhatla", email = "msimham@utexas.edu" },
@@ -21,26 +21,16 @@ keywords = [
     "surgery",
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Operating System :: OS Independent",
 ]
 dependencies = [
-    "matplotlib>=3.7",
-    "numpy>=1.24",
-    "sentence-transformers>=3.0",
-    "torch>=2.0",
-    "tqdm>=4.60",
-    "transformers>=4.40",
+    "matplotlib>=3.11.1",
+    "numpy>=2.5.1",
+    "sentence-transformers>=5.1.2",
+    "torch>=2.13.0",
+    "tqdm>=4.69.0",
+    "transformers>=5.14.1",
 ]
 
 [project.optional-dependencies]

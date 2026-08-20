@@ -4,7 +4,7 @@ Generate normalized text embeddings for surgical and medical terms using pretrai
 
 ## Overview
 
-`surgical_embeddings` wraps three HuggingFace models behind a single interface:
+`surgical_embeddings` wraps three HuggingFace models behind a single interface and provides embeddings for surgical procedures:
 
 | Key | Model |
 |---|---|
@@ -16,33 +16,20 @@ Given a list of strings, a single string, or a path to a `.txt` file (one term p
 
 ## Installation
 
-SurgicalEmbeddings requires Python 3.9 or later. To install the package from a
-local clone:
+SurgicalEmbeddings requires Python 3.10 or later. It can be installed from PyPI with:
 
 ```bash
-git clone https://github.com/mahisimham/SurgicalEmbeddings.git
-cd SurgicalEmbeddings
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install .
+pip install surgical-embeddings
 ```
 
-For an editable development installation with the test dependency:
-
-```bash
-python -m pip install -e ".[test]"
-```
-
-The package can also be installed directly from GitHub:
+Or directly from GitHub and create a virtual environment:
 
 ```bash
 python -m pip install "git+https://github.com/mahisimham/SurgicalEmbeddings.git"
-```
 
-Once the package has been published to PyPI, it can be installed with:
-
-```bash
-python -m pip install surgical-embeddings
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt 
 ```
 
 The pretrained Hugging Face models are downloaded and cached automatically
@@ -59,15 +46,17 @@ src/surgical_embeddings/
 └── pca_models/        # precomputed PCA components (mean, components, explained variance) per model
 tests/
 └── test_embeddings.py # pytest suite covering model selection, PCA, saving, and error handling
-example_usage.py       # end-to-end usage examples
+usage/
+├── example_usage.py   # end-to-end usage examples, using the installed package
+└── test_input.txt     # sample input file (one term per line)
 requirements.txt       # pinned dependencies
 ```
 
-`embeddings/` is the default output directory for generated `.npz` files; it's git-ignored since embeddings are generated artifacts, not source.
+`embeddings/` is the default output directory for generated `.npz` files
 
 ## Environment
 
-- Python 3.9 or later (developed/tested against 3.12.7)
+- Python 3.10 or later 
 - Runtime dependencies are declared in [`pyproject.toml`](pyproject.toml)
 - A fully pinned development environment is available in [`requirements.txt`](requirements.txt)
 
@@ -127,6 +116,11 @@ projection. Set `variance_percent` to a value greater than 0 and at most 100 to
 retain the number of principal components needed to reach that percentage of
 explained variance.
 
+PCA projection loads its precomputed matrices via `importlib.resources`, so
+`apply_pca=True` requires `surgical_embeddings` to actually be installed
+(`pip install .` or `pip install surgical-embeddings`) rather than just added
+to `sys.path`.
+
 Saved files use the configuration in their names:
 
 | Configuration | Filename suffix |
@@ -152,7 +146,7 @@ plot alongside it as
 least two dimensions. Pass `title=None` to use the default title, `PCA
 Embeddings`.
 
-See [`example_usage.py`](example_usage.py) for an end-to-end example that
+See [`usage/example_usage.py`](usage/example_usage.py) for an end-to-end example that
 generates original, full-PCA, and 95%-variance embeddings before plotting the
 full-PCA BGE output.
 

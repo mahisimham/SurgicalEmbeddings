@@ -61,13 +61,13 @@ def load_pca_model(model_name):
         raise ValueError(f"No PCA file available for {model_name}")
 
     # Locate PCA file inside package - only works if the package is installed
-    # path = files("surgical_embeddings").joinpath("pca_models", PCA_FILES[model_name])
+    path = files("surgical_embeddings").joinpath("pca_models", PCA_FILES[model_name])
 
-    path = (
-        Path(__file__).parent
-        / "pca_models"
-        / PCA_FILES[model_name]
-    )
+    # path = (
+    #     Path(__file__).parent
+    #     / "pca_models"
+    #     / PCA_FILES[model_name]
+    # )
 
     if not path.exists():
         raise FileNotFoundError(

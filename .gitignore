@@ -3,3 +3,7 @@
 embeddings/
 src/surgical_embeddings/__pycache__/
 tests/__pycache__/
+scalability/
+dist/
+surgicalembeddings/
+src/surgical_embeddings.egg-info/
