@@ -25,7 +25,7 @@ pip install surgical-embeddings
 Or directly from GitHub and create a virtual environment:
 
 ```bash
-python -m pip install "git+https://github.com/mahisimham/SurgicalEmbeddings.git"
+pip install "git+https://github.com/mahisimham/SurgicalEmbeddings.git"
 
 python -m venv .venv
 source .venv/bin/activate
